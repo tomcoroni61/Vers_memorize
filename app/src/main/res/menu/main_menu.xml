@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:title=" ? "
+        android:id="@+id/mtxtvers"
+        />
+
+    <item android:title=" File chooser .. "
+        android:id="@+id/mtfeili"
+        />
+
+    <item android:title=" File chooser 2.. "
+        android:id="@+id/mfeilch2"
+        />
+
+    <item
+        android:title="Speech.."
+        android:id="@+id/mSpeech"
+        />
+
+    <item
+        android:title="Entries.."
+        android:id="@+id/mEntries"
+         />
+    <item
+        android:title="Word Click"
+        android:id="@+id/mClickWord"
+        />
+    <item
+        android:title="Word mix"
+        android:id="@+id/mLayout"
+        />
+    <item
+        android:title="dlg"
+        android:id="@+id/mdlg"
+        />
+
+</menu>
+
+<!--
+    <item
+        android:title="share file"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:id="@+id/mShare"
+         />
+-->

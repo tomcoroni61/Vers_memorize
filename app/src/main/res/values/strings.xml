@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="CrashReportEmailTo" translatable="false">thomasfr2024@outlook.com</string>
+
+    <string name="CrashReport_MailBody" translatable="false">Hello, \nSorry found crash</string>
+    <string name="CrashReport_MailSubject" translatable="false">Crashreport from </string>
+
+    <string name="add">add</string>
+
+    <string name="again">again</string>
+
+    <string name="app_name">Vers Memorize</string>
+
+    <string name="auto_hide">auto hide</string>
+
+    <string name="change">change</string>
+
+    <string name="choose">choose</string>
+
+    <string name="clear">Clear</string>
+
+    <string name="current_file">current file</string>
+
+    <string name="delete">delete</string>
+
+    <string name="down">down</string>
+
+    <string name="edit">Edit</string>
+
+    <string name="exit">exit</string>
+
+    <string name="letters">Letters..</string>
+
+    <string name="load">: load</string>
+    <string name="load_original">load original</string>
+
+    <string name="new_folder">New Folder</string>
+
+    <string name="next">Next</string>
+
+    <string name="nextData" translatable="false"><![CDATA[>]]></string>
+
+    <string name="no">No</string>
+
+    <string name="open">Open</string>
+
+    <string name="opt">Opt</string>
+
+    <string name="prevData" translatable="false"><![CDATA[<]]></string>
+
+    <string name="previous">Previous</string>
+
+    <string name="range">Theme</string>
+
+    <string name="ready">Ready..</string>
+    <string name="ready_to_hear">Ready to hear..</string>
+
+    <string name="recite">recite</string>
+
+    <string name="record">Record..</string>
+
+    <string name="recording_done">Recording done</string>
+
+    <string name="replace">Replace</string>
+
+    <string name="s" translatable="false">S</string>
+
+    <string name="search">Search</string>
+
+    <string name="send_me_email" translatable="false">Send me email</string>
+
+    <string name="share_me">share me</string>
+
+    <string name="show_text">show Text</string>
+
+    <string name="speak">speak</string>
+    <string name="speak_and">Speak +</string>
+    <string name="speak_now">Speak now…</string>
+
+    <string name="speech_start">Speech start</string>
+
+    <string name="start">Start</string>
+
+    <string name="stop">Stop</string>
+    <string name="stop_by_user" translatable="false">Stop by user</string>
+
+    <string name="text">Text</string>
+
+    <string name="title_activity_entries">Entries</string>
+
+    <string name="translation">Translation</string>
+
+    <string name="up">up</string>
+
+    <string name="vers">Vers</string>
+
+    <string name="word_click">word click</string>
+    <string name="word_mix">word mix</string>
+
+    <string name="words">words</string>
+
+    <string name="yes">Yes</string>
+    <string name="word_click_lz">" word click "</string>
+    <string name="spruch_csv">spruch_en.csv</string>
+    <string name="save_as">Save as</string>
+    <string name="exit_app_now">Exit App now?</string>
+    <string name="import_from_downloads" translatable="false">import from downloads</string>
+    <string name="overwrite">"Overwrite: "</string>
+    <string name="set" translatable="false"><![CDATA[-->]]></string>
+    <string name="lernvers">to learn:</string>
+    <string name="add_to_your_bibleverses">Add to your Bibleverses?</string>
+    <string name="copy_to_app_file_dir">"Copy to app file dir? "</string>
+    <string name="question_mark" translatable="false">\?</string>
+    <string name="welcome">Welcome</string>
+    <string name="_3x_okay">"3x Okay: "</string>
+    <string name="okay">Great, three times right</string>
+    <string name="times_okay_say_it_again">"Right, please say it again!"</string>
+    <string name="with_pause">extra pause</string>
+    <string name="signalton">Signal</string>
+    <string name="introduction">Introduction</string>
+    <string name="returni">Return</string>
+    <string name="speak_vers">speak vers</string>
+    <string name="keep_screen_on">keep Screen on</string>
+
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Automatically translated by Globalization Translator (https://github.com/wilinz/globalization-translator)-->
+<resources>
+  <string name="add">Hinzufügen</string>
+  <string name="again">nochmal</string>
+  <string name="app_name">Verse lernen</string>
+  <string name="auto_hide">Auto ausblenden</string>
+  <string name="change">Ändern</string>
+  <string name="choose">Wählen</string>
+  <string name="clear">leeren</string>
+  <string name="current_file">Aktuelle Datei</string>
+  <string name="delete">Löschen</string>
+  <string name="down">Runter</string>
+  <string name="edit">Bearbeiten</string>
+  <string name="exit">Beenden</string>
+  <string name="letters">Buchstaben</string>
+  <string name="load">: laden</string>
+  <string name="load_original">Original laden</string>
+  <string name="new_folder">Neuer Ordner</string>
+  <string name="next">Nächste</string>
+  <string name="no">NEIN</string>
+  <string name="open">Öffen</string>
+  <string name="opt">Opt</string>
+  <string name="previous">Vorherige</string>
+  <string name="range">Thema</string>
+  <string name="ready">Bereit..</string>
+  <string name="ready_to_hear">Bereit zu hören..</string>
+  <string name="recite">Rezitieren</string>
+  <string name="record">Aufzeichnen..</string>
+  <string name="recording_done">Aufnahme fertig</string>
+  <string name="replace">Ersetzen</string>
+  <string name="search">Suchen</string>
+  <string name="share_me">Teile mich</string>
+  <string name="show_text">Text anzeigen</string>
+  <string name="speak">Sprechen</string>
+  <string name="speak_and">Sprechen +</string>
+  <string name="speak_now">Sprich jetzt…</string>
+  <string name="speech_start">Redebeginn</string>
+  <string name="start">Start</string>
+  <string name="stop">Stop</string>
+  <string name="text">Text</string>
+  <string name="title_activity_entries">Einträge</string>
+  <string name="translation">Übersetzung</string>
+  <string name="up">Hoch</string>
+  <string name="vers">Vers</string>
+  <string name="word_click">Wortklick</string>
+  <string name="word_mix">Wortmischung</string>
+  <string name="words">Worte</string>
+  <string name="yes">Ja</string>
+  <string name="word_click_lz">" Wortklick "</string>
+  <string name="spruch_csv">spruch_de.csv</string>
+  <string name="save_as">Speichern unter</string>
+  <string name="exit_app_now">App beenden?</string>
+  <string name="overwrite">"Überschreibe: "</string>
+  <string name="lernvers">zu lernen:</string>
+  <string name="add_to_your_bibleverses">Zu Verse hinzufügen?</string>
+  <string name="copy_to_app_file_dir">Kopiere in den App Ordner?</string>
+    <string name="welcome">Willkommen</string>
+  <string name="_3x_okay">3x Richtig:</string>
+  <string name="okay">Super, dreimal richtig</string>
+    <string name="times_okay_say_it_again">Richtig, bitte noch einmal</string>
+    <string name="with_pause">extra Pause</string>
+  <string name="signalton">Signal</string>
+  <string name="introduction">Einführung</string>
+    <string name="returni">Zurück</string>
+</resources>

@@ -1,0 +1,882 @@
+package com.e.versmix.activ;
+
+import static com.e.versmix.utils.Fixi.Items.itemChooseColor;
+import static com.e.versmix.utils.Fixi.Items.itemNormalColor;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.style.BackgroundColorSpan;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.e.versmix.R;
+import com.e.versmix.itemLs.LvAdapt;
+import com.e.versmix.itemLs.SuEr_Item;
+import com.e.versmix.utils.BaseSwipeActivity;
+import com.e.versmix.utils.Globus;
+import com.e.versmix.utils.ShButton;
+
+import org.apmem.tools.layouts.FlowLayout;
+
+import java.util.ArrayList;
+import java.util.Locale;
+
+public class AySpeech extends BaseSwipeActivity {
+
+    private FlowLayout flText;
+    private EditText etSearch, eRecognizer, eWordsInc, eSearchR, eReplaceS;
+    private TextView tvHeader, tvRecodo;
+    private boolean bAutoHideText=true;
+    private ShButton saw_btn, sbRecbtn;
+    private Button btUp, btDown;
+    private Suer_Adapter suer_adapter;
+    private int ItemClickidx = -1;
+    private ProgressBar progressBar1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.ay_speech); //sbtSpeakAndWordInc
+        tvHeader = findViewById(R.id.headerTextView);
+        tvRecodo = findViewById(R.id.ystvRecoToDo);
+        etSearch = findViewById(R.id.sedSeek);
+        eRecognizer = findViewById(R.id.sedRecord);
+        saw_btn = findViewById(R.id.sbtSpeakAndWordInc);
+        sbRecbtn = findViewById(R.id.sbtReci);
+        progressBar1= findViewById(R.id.progressBar1);
+
+        eWordsInc = findViewById(R.id.sedwordcnt);
+        eWordsInc.setText(gc.appVals().valueReadString("eWordsInc", "3"));
+        eWordsInc.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {  }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count==0 || s==null || s.length()==0) return;
+                gc.appVals().valueWriteString("eWordsInc", s.toString());
+            }
+        });
+
+        //  suche ersetzenliste ...
+        ListView lv = findViewById(R.id.lvserepl);
+        suer_adapter = new Suer_Adapter(this);
+        lv.setAdapter(suer_adapter);
+        handleItemClick();
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            ItemClickidx = position;
+            handleItemClick();
+        });
+        suer_adapter.loadFromFile();
+        int i=0;
+        String[] suer ={"dass", "das", "daß", "das", " {2}", " "};
+        if (suer_adapter.getCount()==0) {
+            while (i < 6) {
+                SuEr_Item item = new SuEr_Item();
+                item.suche = suer[i];
+                i++;
+                item.ersetze = suer[i];
+                i++;
+                suer_adapter.add(item);
+            }
+            suer_adapter.savetofile();
+            suer_adapter.notifyDataSetChanged();
+        }
+        eSearchR = findViewById(R.id.ed_SearchR);
+        eReplaceS = findViewById(R.id.ed_Replace);
+        btDown = findViewById(R.id.btsrDown);
+        btUp = findViewById(R.id.btsrUp);
+
+        flText = findViewById(R.id.asfLText);
+        setFields();
+        resetSpeechRecognizer();
+        setRecogniserIntent();
+    }
+    @Override
+    public void onBackPressed() {
+        gc.doBackPressed();
+        super.onBackPressed();
+    }
+
+    public void btDownClick(View view) {
+        SuEr_Item Clickitem = suer_adapter.getItem(ItemClickidx);
+        SuEr_Item aitem =suer_adapter.getItem(ItemClickidx + 1);
+        suer_adapter.set(ItemClickidx, aitem);
+        suer_adapter.set(ItemClickidx + 1, Clickitem);
+        ItemClickidx++;
+        ArrowButs();
+        suer_adapter.savetofile();
+
+    }
+
+    public void btUpClick(View view) {
+        SuEr_Item Clickitem = suer_adapter.getItem(ItemClickidx);
+        SuEr_Item aitem = suer_adapter.getItem(ItemClickidx - 1);
+        suer_adapter.set(ItemClickidx, aitem);
+        suer_adapter.set(ItemClickidx - 1, Clickitem);
+        ItemClickidx--;
+        ArrowButs();
+        suer_adapter.savetofile();
+    }
+
+    public void btAddClick(View view) {
+        SuEr_Item item = new SuEr_Item();
+        item.suche = eSearchR.getText().toString();
+        item.ersetze = eReplaceS.getText().toString();
+        suer_adapter.add(item);  suer_adapter.savetofile();
+    }
+
+    public void btDeleteClick(View view) {
+        if (ItemClickidx<0 || ItemClickidx > suer_adapter.getCount()-1) return;
+        SuEr_Item item = suer_adapter.getItem(ItemClickidx);
+        ItemClickidx=-1;
+        suer_adapter.remove(item);
+        suer_adapter.notifyDataSetChanged();
+        ArrowButs();
+    }
+
+    private void handleItemClick() {
+        for (int i = 0; i < suer_adapter.getCount(); i++) {
+            SuEr_Item item = suer_adapter.getItem(i);
+            if (item==null) continue;
+            item.ItemBakColor = itemNormalColor;
+            if (i==ItemClickidx) {
+                item.ItemBakColor = itemChooseColor;
+                eSearchR.setText(item.suche);
+                eReplaceS.setText(item.ersetze);
+            }
+            //if (!item.ItemBakColor.equals(itemChooseColor))
+        }
+
+        suer_adapter.notifyDataSetChanged();
+        ArrowButs();
+    }
+
+    private void ArrowButs(){  if (ItemClickidx <0) return; SuEr_Item item =suer_adapter.getItem(ItemClickidx);
+        if (item==null) return;
+        if (!item.ItemBakColor.equals(itemChooseColor))
+            {  btUp.setVisibility(View.INVISIBLE); btDown.setVisibility(View.INVISIBLE); return; }
+        int count = suer_adapter.getCount();
+        if (ItemClickidx < count-1 && ItemClickidx>-1 ) btDown.setVisibility(View.VISIBLE); else  btDown.setVisibility(View.INVISIBLE);
+        if (ItemClickidx > 0)  btUp.setVisibility(View.VISIBLE); else  btUp.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+        private void doCurDataIdx(boolean Minus) {
+        gc.csvList().doLearnDataIdx(Minus);
+
+        setFields();
+    }
+    private void setFields() {
+        if (gc.LernItem==null) return;
+        flText.removeAllViews();
+        String txt = gc.LernItem.Text, wort="", now="";
+
+        for (int i = 0; i < txt.length(); i++) {
+            char c = txt.charAt(i);
+            if ( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ){ //(c >= '0' && c <= '9') ||
+                if (!now.isEmpty()) {
+                    addTxt(wort + now);
+                    now = ""; wort="";
+                }
+                wort += c;
+
+            } else
+                switch (c) {
+                    case 'ö': case 'Ö': case 'ä': case 'Ä':
+                    case 'ü': case 'Ü': case 'ß':
+                        if (!now.isEmpty()) {
+                            addTxt(wort + now);
+                            now = ""; wort="";
+                        }
+                        wort += c;
+                    break;
+                    default: now += c;
+
+                    break;
+                }
+
+        }
+        addTxt(wort + now);
+        tvHeader.setText(gc.LernItem.Vers);
+    }
+    private void addTxt(String tx) {
+        if (tx.isEmpty()) return;
+        TextView textView = (TextView) LayoutInflater.from(flText.getContext())
+                .inflate(R.layout.tv_speech, flText, false);
+        textView.setText(tx);
+        //textView.setBackgroundResource(R.drawable.rounded_corner);
+        textView.setOnClickListener(this::wordClick);
+        flText.addView(textView);
+    } // extends SpeechRecognizer
+
+    private void wordClick(View view) {
+        TextView textView = (TextView) view;
+        if (textView.getBackground()==null) {
+            int cnt=0;
+            for (int i = 0; i < flText.getChildCount(); i++) {
+                View v = flText.getChildAt(i);
+                if (v.getBackground() != null) {
+                    cnt++;
+                    if (cnt>1) v.setBackground(null);
+                }
+            }
+            textView.setBackgroundResource(R.drawable.speech_sel);
+        } else
+                textView.setBackground(null);
+    }
+
+    public void asttsSettingsClick(View v) {
+        gc.ttSgl().andoSetttings();
+    }
+
+    private void endRecoBeep() {
+        if (!RecSignal) return;
+        gc.playaTone(500, 255, 0.2, true);
+        gc.playaTone(700, 255, 0.2, true);
+    }
+
+    private SpeechRecognizer speechRecognizer=null;
+    private Intent speechRecognizerIntent;
+    private boolean recording = false;
+    private String curTTS_SpeakText, lastRecoTxt;
+    private long saw_lastMicNoice, afterRecStart;
+    private boolean  RecSignal=true;
+    private void getSpeakText() {
+        int cnt=0, wIdx=flText.getChildCount();   curTTS_SpeakText ="";
+        if (saw_cnt>4) wIdx=saw_cnt+1;
+        if (wIdx>flText.getChildCount()) wIdx=flText.getChildCount();
+        gc.Logl("widx "+wIdx + " cnt: "+flText.getChildCount(), false);
+        gc.Logl("saw_cnt "+saw_cnt , false);
+
+        for (int i = 0; i < wIdx; i++) {
+            TextView v = (TextView) flText.getChildAt(i);
+
+            if (saw_cnt < 4) {
+                if (v.getBackground() != null) {
+                    cnt++;
+
+                }
+                if (cnt == 1) curTTS_SpeakText += v.getText().toString();
+                if (cnt == 2) {
+                    curTTS_SpeakText += v.getText().toString();
+                    cnt = 3;
+                }
+            }  else curTTS_SpeakText += v.getText().toString();
+        }
+        if (curTTS_SpeakText.isEmpty()) curTTS_SpeakText = gc.LernItem.Text;
+
+    }
+    private int waitSec, timeRecOut=1400;
+    private final Handler Timhandl = new Handler(Looper.getMainLooper());
+    private final Runnable checkSpeackStart = new Runnable() {  //geht nur wenn handy eingeschalten ist.
+        @Override
+        public void run() {
+            waitSec++;
+            if (waitSec>30) return;
+            if (!gc.ttSgl().ttobj.isSpeaking()) Timhandl.postDelayed(checkSpeackStart, 1111); else
+                Timhandl.postDelayed(checkSpeakEnd, 1111);
+        }
+    };
+
+
+
+    /*Thread thread = new Thread() {
+        @Override
+        public void run() {
+            try {  //kein Zugriff auf Views
+                while(true) {
+                    sleep(100);
+                    long cmi = System.currentTimeMillis();
+
+                    if (cmi - afterRecStart > timeRecOut) {
+                        //speechRecognizer.stopListening();
+                        Timhandl.postDelayed(checkUserSpeaking, 11);
+                        return;
+                    }
+                    if (cmi - saw_lastMicNoice < 3000) {//weiter stt
+                        Timhandl.postDelayed(checkUserSpeaking, 111);
+                        return;
+                    }
+
+
+                }
+            } catch (InterruptedException e) {
+               // e.printStackTrace();
+            }
+        }
+    };*/
+
+
+    private final Runnable checkUserSpeaking = new Runnable() {
+        @Override
+        public void run() {
+            long cmi = System.currentTimeMillis();
+
+            if (cmi - afterRecStart > timeRecOut) {//timeRecOut geht nur bis ~400 "Looper gestoppt"?
+                //stt macht looper kaputt?
+                eRecognizer.setText(lastRecoTxt); //etSearch.setText("timeout");
+                lastRecoTxt = "";
+                gc.toast("Aufnahme timeOut");
+                //speechRecognizer.stopListening();
+                stopRecording();
+                doneRecording();
+                return;
+            }
+            if (cmi - saw_lastMicNoice < 3000) {//weiter stt
+                eRecognizer.setText(lastRecoTxt); //etSearch.setText("weiter");
+                //gc.toast("Aufnahme geht weiter");
+                lastRecoTxt = "";
+                return;
+            }
+            Timhandl.postDelayed(checkUserSpeaking, 31);
+        }
+    }; //
+    private final Runnable startListening = () -> {
+        if (RecSignal) gc.playaTone(500, 455, 0.2, true);
+        startListening(); // etSearch.setText("check weiter");
+        afterRecStart = System.currentTimeMillis();
+        //Looper.prepareMainLooper();     Looper.prepare();
+        //thread.start();
+        Timhandl.postDelayed(checkUserSpeaking, 111);
+    }; // Timhandl.postDelayed(startReco, 1511);
+    private final Runnable startReco = () -> {
+        if (RecSignal) gc.playaTone(500, 455, 0.2, true);
+        startRecording();
+        //ysbtRecognizeClick(null);
+    }; // Timhandl.postDelayed(checkUserSpeaking, 1511);
+    private final Runnable sayOki = () -> gc.ttSgl().speak(getString(R.string.okay));
+    private final Runnable checkSpeakEnd = new Runnable() {
+        @Override
+        public void run() {
+            if (gc.ttSgl().ttobj.isSpeaking()) Timhandl.postDelayed(checkSpeakEnd, 1111); else {
+                Timhandl.postDelayed(startReco, 1511);
+
+            }
+        }
+    };
+    private boolean startSpeak() {
+        getSpeakText();
+        if (curTTS_SpeakText.isEmpty()) {
+            //Note that Snackbars are preferred for brief messages while the app is in the foreground.
+            Toast.makeText(this, "Please enter some text", Toast.LENGTH_SHORT).show();
+            return false;
+        } else gc.ttSgl().speak(curTTS_SpeakText);
+        return true;
+    }
+    public void speakClick(View view) {
+        startSpeak();
+    }
+    public void speakAndClick(View view) {
+        if (!startSpeak()) return;
+        waitSec=0;  saw_cnt=-1;  ss = Saw_states.saw_wait;
+        Timhandl.postDelayed(checkSpeackStart, 1111);
+    }//
+    public void sckRecPauseClick(View view) {
+        CheckBox cb = (CheckBox) view;
+        saw_RecPause = cb.isChecked();
+    }
+    public void sckRecBeepClick(View view) {
+        CheckBox cb = (CheckBox) view;
+        RecSignal = cb.isChecked();
+    }
+
+    private int saw_cnt=-1, saw_inc=3, saw_WordsOk_cnt, saw_allSayedCnt, saw_MinRecLevel=3;
+    private boolean saw_RecPause = false, saw_RecPauseContinue=false;
+
+
+
+
+    private enum Saw_states { saw_wait, saw_started, saw_userStop, saw_3xOk }
+    private Saw_states ss = Saw_states.saw_wait;
+
+    public void speakAndWordsClick(View view) {
+
+        if (ss == Saw_states.saw_wait) {
+            ss = Saw_states.saw_started;
+            saw_cnt = 5;  saw_allSayedCnt=0;
+            saw_btn.setText(R.string.stop);
+            eRecognizer.setText("");  tvRecodo.setText("");
+            try {
+                saw_inc = Integer.parseInt(eWordsInc.getText().toString());
+            } catch(NumberFormatException ignored) {  }
+            if (!startSpeak()) return;
+            waitSec=0;
+            Timhandl.postDelayed(checkSpeackStart, 1111);
+        } else
+        if (view!=null || ss==Saw_states.saw_userStop) {
+            gc.ttSgl().ttobj.stop();
+            saw_btn.setText(R.string.words);
+            ss = Saw_states.saw_wait;
+            tvRecodo.setText(R.string.stop_by_user);
+        } else
+        //if (ss==Saw_states.saw_3xOk)
+            {
+                saw_btn.setText(R.string.words);
+                ss = Saw_states.saw_wait;
+
+            }
+
+    }
+    private void afterRecordCheck() {
+        if (saw_cnt < 4 || saw_WordsOk_cnt<3) {
+            if (ss != Saw_states.saw_wait) {
+                ss = Saw_states.saw_userStop;
+                speakAndWordsClick(null);
+            }
+            return;
+        }
+        if (saw_WordsOk_cnt < saw_cnt) saw_cnt = saw_WordsOk_cnt; else
+            saw_cnt += saw_inc;
+        //Snackbar.make(this.eRecognizer, "Reco saw_cnt "+saw_cnt, Snackbar.LENGTH_LONG).show();
+        if (saw_WordsOk_cnt > saw_cnt) saw_cnt=saw_WordsOk_cnt;
+        if (saw_WordsOk_cnt > flText.getChildCount()-2) {
+            saw_allSayedCnt++;
+            if (saw_allSayedCnt>2) {
+                ss = Saw_states.saw_3xOk;
+                Timhandl.postDelayed(sayOki, 2111);
+                speakAndWordsClick(null);
+                String eReco=getString(R.string._3x_okay) + "\n"+ eRecognizer.getText().toString();
+                eRecognizer.setText(eReco);
+                return;
+            }
+            eRecognizer.setText("");
+            gc.ttSgl().speak(getString(R.string.times_okay_say_it_again));
+            Timhandl.postDelayed(startReco, 5511);
+            return;
+        }
+        if (!startSpeak()) return;
+        waitSec=0;  eRecognizer.setText("");
+        Timhandl.postDelayed(checkSpeackStart, 1111);
+    }
+    private String suerByList(String text) {
+        for (int i = 0; i < suer_adapter.getCount(); i++) {
+            SuEr_Item item = suer_adapter.getItem(i);
+            if (item==null) continue;
+            text = text.replaceAll(item.suche, item.ersetze);
+        }
+        return text;
+    }
+    private void checkRecorded() {
+        if (curTTS_SpeakText==null) return;
+        String spk = eRecognizer.getText().toString();
+        String text= curTTS_SpeakText.toLowerCase(Locale.getDefault());
+
+        if (spk.length()>text.length()+6) {
+            int mi=saw_cnt;  saw_cnt=0;
+            getSpeakText();
+            text= curTTS_SpeakText.toLowerCase(Locale.getDefault());
+            saw_cnt=mi;
+        }
+        spk = gc.formatText(spk);   saw_WordsOk_cnt=0;
+        spk= spk.toLowerCase(Locale.getDefault());//
+
+        text = gc.formatText(text);
+        if (text.isEmpty() || spk.isEmpty()) return;
+
+        text = suerByList(text);
+        spk = suerByList(spk);
+
+        int  cnt=0, idxText=0, idxSpk=0;
+        char charText, charSpk;
+
+        while (idxText < text.length() && idxSpk < spk.length()) {
+
+            charSpk = spk.charAt(idxSpk);   charText =text.charAt(idxText);
+
+            if (charSpk==' ' && charText != ' ') {
+                idxSpk++; cnt++;
+                continue;
+            }
+            if (charText==' ' && charSpk != ' ') {
+                idxText++;  continue;
+            }
+
+            if (charSpk == charText) {
+                cnt ++;
+                if (charSpk==' ') saw_WordsOk_cnt++;
+            } else break;
+
+            idxText++; idxSpk++;
+        }
+
+
+        SpannableString spannableString = new SpannableString(spk);
+        //BackgroundColorSpan[] backgroundSpans = spannableString.getSpans(0, spannableString.length(), BackgroundColorSpan.class);
+        spannableString.setSpan(new BackgroundColorSpan(Color.parseColor("#306533")), 0, cnt, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        eRecognizer.setText(spannableString);
+        afterRecordCheck();
+    }
+
+
+    public void sbtSearchClick(View v) {
+        int  idx=gc.csvList().findText(etSearch.getText().toString(), gc.LernData_Idx+1);
+        if (idx < 0) return;
+        gc.LernItem=gc.csvList().getLernData(idx);
+        setFields();
+    }
+    public void sbtPrevDataClick(View v) {
+        doCurDataIdx(false);
+    }
+    public void sbtNextDataClick(View v) {
+        doCurDataIdx(true);
+    }
+
+    private void startRecording() {
+        if (!gc.checkPermissions(false, Manifest.permission.RECORD_AUDIO)
+                && !gc.checkPermissions(true, Manifest.permission.RECORD_AUDIO)) return;
+        if (bAutoHideText) flText.setVisibility(View.INVISIBLE);
+        eRecognizer.setHint("");
+        startListening();
+    }
+    private void stopRecording() {
+        speechRecognizer.stopListening();
+        speechRecognizer.cancel();
+        flText.setVisibility(View.VISIBLE);
+        progressBar1.setVisibility(View.GONE);
+        sbRecbtn.setText(getString(R.string.record));
+    }
+    //2. von Runnable startReco
+    public void ysbtRecognizeClick(View v) {
+        if (!recording) {
+            waitSec=0;  saw_cnt=-1;  ss = Saw_states.saw_wait;
+            getSpeakText();
+            timeRecOut = Integer.parseInt(eReplaceS.getText().toString());
+            eRecognizer.setText("");
+            sbRecbtn.setText(getString(R.string.stop));
+            recording = true;
+            startRecording();
+        } else {
+            recording=false;
+            stopRecording();
+        }
+    }
+//https://medium.com/@andraz.pajtler/android-speech-to-text-the-missing-guide-part-1-824e2636c45a
+    protected void startListening() {
+        //recording = true;
+        if (speechRecognizer!=null)
+            speechRecognizer.startListening(speechRecognizerIntent);
+        progressBar1.setVisibility(View.VISIBLE);
+    }
+    private void resetSpeechRecognizer() {
+        if (speechRecognizer != null) speechRecognizer.destroy();
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            gc.toast("Speech Recognition is not available");
+        } else dosetRecognitionListener();
+    }
+    private void setRecogniserIntent() {
+        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        //ohne Sysbeep bei Aufnahmestart
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 11);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
+                30000L);
+/*
+
+        //intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+        if (!speechRecognizerIntent.hasExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE))
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "com.e.versmix");
+
+        //possible ok: ohne Wirkung 11.2024
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
+                3000L);
+
+            speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+            Long googleVoiceTimeout = 15000L;
+
+from: https://developer.android.com/reference/android/speech/RecognizerIntent#EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS
+
+        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS  AND  EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS
+        needs  EXTRA_SEGMENTED_SESSION
+
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, googleVoiceTimeout);
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, googleVoiceTimeout);
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,googleVoiceTimeout);
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS,true);
+
+ */
+
+    }
+
+    private void dosetRecognitionListener() {
+
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+                eRecognizer.setHint(R.string.speak_now);  tvRecodo.setText(R.string.speak_now);
+                if (!saw_RecPause) eRecognizer.setText(R.string.ready_to_hear);
+            }
+            @Override
+            public void onBeginningOfSpeech() {
+                if (!saw_RecPause) eRecognizer.setText("");
+                eRecognizer.setHint(R.string.speech_start);  tvRecodo.setText(R.string.speech_start);
+                progressBar1.setIndeterminate(false);
+                progressBar1.setMax(100);
+            }
+            @Override
+            public void onRmsChanged(float v) {
+                // Lautstärke Microphone..   binding.progressBar1.progress = rmsdB.toInt()
+                int rms = Math.round(v*10);
+                progressBar1.setProgress( rms );
+                if (rms >= saw_MinRecLevel)
+                    saw_lastMicNoice=System.currentTimeMillis();
+            }
+            @Override
+            public void onEndOfSpeech() {
+                //recording=false;
+                eRecognizer.setHint(R.string.recording_done);   tvRecodo.setText(R.string.recording_done);
+                progressBar1.setIndeterminate(true);
+                sbRecbtn.setText(getString(R.string.record));
+            }
+
+            @Override
+            public void onError(int i) {//nichts mehr zu sagen
+                String err = getErrorText(i);
+                tvRecodo.setText(err);
+                if ( saw_RecPause && saw_RecPauseContinue) {
+                    eRecognizer.setHint("");  //etSearch.setText("onError..saw_RecPauseContinue");
+                    String txt=eRecognizer.getText().toString()+" "+lastRecoTxt;
+                    eRecognizer.setText(txt);
+                    lastRecoTxt="";
+                    saw_RecPauseContinue=false;
+                    doneRecording();
+                    return;
+                }
+                if (recording) { //nur user stt
+                    ysbtRecognizeClick(null);
+                    return;
+                }
+
+                // eRecognizer.setText(err);                flText.setVisibility(View.VISIBLE);
+                if (ss!=Saw_states.saw_wait) {
+                    ss = Saw_states.saw_userStop;
+                    speakAndWordsClick(null);
+                }
+                // resetSpeechRecognizer();
+                progressBar1.setVisibility(View.GONE);
+//see: https://medium.com/@andraz.pajtler/android-speech-to-text-the-missing-guide-part-1-824e2636c45a
+            }
+
+            @Override  //=endof recognize
+            public void onResults(Bundle bundle) {
+                //micButton.setImageResource(R.drawable.ic_mic_black_off);
+                ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                assert data != null;
+                String rectxt = eRecognizer.getText().toString() + " " + data.get(0);
+                endRecoBeep(); //Hoppla einfach mit Aufnahme aufgehört?
+
+                if (saw_RecPause) {
+                    String vText = gc.formatText(gc.LernItem.Text);
+                    if (rectxt.length() > vText.length()-4) {
+                        eRecognizer.setText(rectxt);
+                        doneRecording();
+                        return;
+                    }
+                    lastRecoTxt = rectxt;
+                    Timhandl.postDelayed(startListening, 2511);
+                    saw_RecPauseContinue = true;
+                    return;
+/*
+                    if (rectxt.length() > 9) { gc.LernItem.Text
+                        String txt =  eRecognizer.getText().toString() + rectxt;
+
+                        if (curTTS_SpeakText!=null && txt.length() < curTTS_SpeakText.length()-5) {
+                            saw_RecPauseContinue = true;
+                            eRecognizer.setText(txt);
+                            Timhandl.postDelayed(startListening, 2511);
+                            //startListening(); //
+                            return;
+                        }
+                        eRecognizer.setText(data.get(0));
+                    }
+
+                    //if (System.currentTimeMillis()-saw_lastMicNoice<5000) {}
+ */
+                } else {
+                    eRecognizer.setText(data.get(0));
+                }
+                doneRecording();
+
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+    }
+    private void doneRecording() {
+        //recording=false;
+        flText.setVisibility(View.VISIBLE);
+        progressBar1.setVisibility(View.GONE);
+        sbRecbtn.setText(getString(R.string.record));
+        checkRecorded();
+    }
+    public static String getErrorText(int errorCode) {
+        String message;
+        switch (errorCode) {
+            case SpeechRecognizer.ERROR_AUDIO:
+                message = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                message = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                message = "Insufficient permissions";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                message = "Network error";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                message = "Network timeout";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                message = "No match";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                message = "RecognitionService busy";
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                message = "error from server";
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                message = "No speech input";
+                break;
+            case SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED:
+                message = "Language Not supported";
+                break;
+            case SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE:
+                message = "Language Unavailable";
+                break;
+            default:
+                message = "Didn't understand, please try again.";
+                break;
+        }
+        return message;
+    }
+    public void as_menuClick(View view) {
+        gc.PopsMenu(view, R.menu.speech_menu);
+    }
+
+    public void maautoHideClick(View view) {
+        CheckBox cb = (CheckBox) view;
+        bAutoHideText = cb.isChecked();
+    }
+
+
+    private static class ViewHolder { TextView tvSuch, tvErsetz; }
+
+        private class Suer_Adapter extends LvAdapt<SuEr_Item> {
+        private final LayoutInflater mInflater;
+
+        public Suer_Adapter(Context context) {
+            super(context, android.R.layout.simple_list_item_2);
+            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            View view;
+            ViewHolder holder;
+            SuEr_Item item = getItem(position);
+
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.suerrow, parent, false);
+                holder = new ViewHolder();
+
+                holder.tvSuch = view.findViewById(R.id.tvSuch);
+                holder.tvErsetz = view.findViewById(R.id.tvErsetze);
+                view.setTag(holder);
+            } else {  view = convertView;  holder = (ViewHolder) view.getTag(); }
+            if (item!=null) {
+                holder.tvSuch.setText(item.suche);
+                holder.tvSuch.setBackgroundColor(Color.parseColor(item.ItemBakColor));
+                holder.tvErsetz.setText(item.ersetze);
+                holder.tvErsetz.setBackgroundColor(Color.parseColor(item.ItemBakColor));
+            }
+            return view;
+        }
+
+        private void loadFromFile() {
+            if (!gc.dateien().openInputStream("SeekReplace.txt")) return;
+            this.clear();
+            while (gc.dateien().readLine()) {
+                SuEr_Item item = new SuEr_Item();
+                item.suche=gc.dateien().rLine;
+                if (!gc.dateien().readLine()) break;
+                item.ersetze=gc.dateien().rLine;
+                this.add(item);
+            }
+            gc.dateien().closeInputStream();
+            this.notifyDataSetChanged();
+        }
+        private void savetofile() {
+            if (!gc.dateien().openOutputStream("SeekReplace.txt", Context.MODE_PRIVATE)) return;
+            for (int i = 0; i < this.getCount(); i++) {
+                SuEr_Item item = getItem(i);
+                if (item==null) continue;
+                gc.dateien().writeLine(item.suche);
+                gc.dateien().writeLine(item.ersetze);
+            }
+            gc.dateien().closeOutputStream();
+        }
+    }
+
+    public void onSwipeLeft() {
+        finish();
+        gc.activityStart(this, AyEntries.class);
+    }
+    public void onSwipeRight() {
+        finish();
+        gc.activityStart(this, AyLetters.class);
+    }
+    public void openKaldiTestClick(View view) {
+        Uri uri = Uri.parse("https://huggingface.co/spaces/k2-fsa/text-to-speech"); // missing 'http://' will cause crashed
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
+}

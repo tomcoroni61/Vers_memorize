@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".utils.Reportus"
+    android:background="@color/dark_background"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/edMessage"
+        android:layout_width="match_parent"
+        android:layout_height="306dp"
+        android:ems="10"
+        android:background="@color/dark_background"
+        android:gravity="start|top"
+        android:inputType="textMultiLine" />
+
+    <Button
+        android:text="@string/send_me_email"
+        android:id="@+id/btSendMa"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="69dp"
+        android:layout_below="@+id/edMessage"
+        android:layout_height="wrap_content"
+        android:onClick="adSendMailClick"
+        />
+
+    <Button
+        android:text="@string/exit"
+        android:id="@+id/btExit"
+        android:layout_width="120dp"
+        android:layout_toEndOf="@id/btSendMa"
+        android:layout_marginStart="19dp"
+        android:onClick="adSendExitClick"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edMessage"
+         />
+</RelativeLayout>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activ.AyClickW"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <TextView
+        android:text="@string/word_click"
+        android:id="@+id/mabottomRight"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="1dp"
+        android:onClick="ac_menuClick"
+        android:textSize="24sp"
+        app:drawableEndCompat="@drawable/baseline_more_vert_36" />
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_marginBottom="12dp"
+    android:layout_marginTop="38dp"
+    android:id="@+id/cscroli"
+    android:layout_height="match_parent"
+    >
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="3dp"
+    >
+    <Button
+        android:text="@string/opt"
+        android:layout_width="wrap_content"
+        android:id="@+id/ycbtspeakObt"
+        android:layout_height="50dp"
+        android:layout_marginStart="9dp"
+        android:onClick="ycbtttsSettingsClick"
+         />
+
+    <com.e.versmix.utils.ShButton
+        android:text="@string/speak"
+        android:layout_width="wrap_content"
+        android:id="@+id/ybtspeak"
+        android:layout_height="50dp"
+        android:layout_toEndOf="@+id/ycbtspeakObt"
+        android:layout_marginStart="9dp"
+        android:onClick="ycbtdoSpeakClick"
+        android:visibility="visible" />
+
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ybtspeak"
+        android:layout_margin="25dp"
+        android:id="@+id/actvText"
+        android:textSize="22sp"
+        />
+
+
+</RelativeLayout>
+
+</ScrollView>
+
+    <org.apmem.tools.layouts.FlowLayout
+        android:id="@+id/acflowLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+
+        android:orientation="horizontal"
+        android:paddingBottom="22dp"> <!-- ok Bottom space
+        android:gravity="bottom"
+            android:layout_below="@+id/ctvText" -->
+
+    </org.apmem.tools.layouts.FlowLayout>
+
+
+    <TextView
+        android:text=" S "
+        android:id="@+id/wtvSpeak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:textSize="18sp"
+        android:onClick="tvSpeackClick"
+        />
+
+    <com.e.versmix.utils.HsTextView
+        android:text=" ? "
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+        android:id="@+id/actxTextView"
+        android:layout_alignParentBottom="true"
+        android:onClick="doPopUpTxtClick"
+        android:layout_toEndOf="@+id/wtvSpeak"
+    android:layout_marginStart="5dp"
+    android:layout_marginBottom="5dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:onClick="doAgainClick"
+        android:layout_toEndOf="@+id/actxTextView"
+        android:layout_marginStart="5dp"
+        app:drawableEndCompat="@drawable/ic_refresh_white_24dp"
+        android:layout_marginBottom="5dp" />
+
+    <TextView
+    android:id="@+id/acheaderTextView"
+        android:layout_marginTop="15dp"
+    android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+        android:textSize="18sp"
+        />
+
+
+</RelativeLayout>

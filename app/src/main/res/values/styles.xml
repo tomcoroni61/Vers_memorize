@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Default Theme
+     <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary_dark</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        Listview weiss + Text weiss
+        android:Theme.Dialog  android:Theme.Black
+        Ne:  android:Theme.  Material.Dialog.MinWidth   Material.Dialog
+    -->
+    <style name="Theme.Imagine.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="android:forceDarkAllowed" tools:targetApi="q">true</item>
+
+    </style>
+    <style name="AlertDialogTheme" parent="android:Theme.Dialog">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AlertDialogMy" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item> //delete this line if you need to show Title.
+    </style>
+
+</resources>

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root"
+    tools:context=".activ.AySpeech"
+    android:orientation="horizontal">
+
+    <TextView
+        android:text=""
+        android:id="@+id/headerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="22dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentTop="true"
+        android:textSize="22sp" />
+
+    <TextView
+        android:text="@string/recite"
+        android:id="@+id/mabottomRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="9dp"
+        android:onClick="as_menuClick"
+        android:textSize="26sp"
+        app:drawableEndCompat="@drawable/baseline_more_vert_36" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="40dp"
+        android:id="@+id/cscroli"
+        android:layout_height="match_parent"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+
+            >
+
+            <Button
+                android:text="@string/opt"
+                android:layout_width="51dp"
+                android:id="@+id/ybtspeakObt"
+                android:textSize="13sp"
+                android:layout_height="40dp"
+                android:layout_marginStart="9dp"
+                android:onClick="asttsSettingsClick"
+                />
+
+            <com.e.versmix.utils.ShButton
+                android:text="@string/speak"
+                android:textSize="13sp"
+                android:layout_width="wrap_content"
+                android:id="@+id/sbtSpeak"
+                android:layout_height="40dp"
+                android:layout_toEndOf="@+id/ybtspeakObt"
+                android:layout_marginStart="9dp"
+                android:onClick="speakClick"
+                />
+
+            <TextView
+                android:text="@string/text"
+                android:id="@+id/ystvText"
+                android:layout_marginTop="9dp"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <CheckBox
+                android:id="@+id/cbautoHideTex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:layout_alignParentEnd="true"
+                android:onClick="maautoHideClick"
+                android:layout_marginEnd="11dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/auto_hide" />
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:id="@+id/asfLText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="25dp"
+                android:minHeight="110dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@+id/ystvText"
+                android:orientation="horizontal"
+                > <!-- ok Bottom space
+        android:gravity="bottom" android:paddingBottom="22dp"
+            android:layout_below="@+id/ctvText" -->
+
+            </org.apmem.tools.layouts.FlowLayout>
+
+            <Button
+                android:text="@string/prevData"
+                android:id="@+id/sbtprevdat"
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/asfLText"
+                android:layout_toStartOf="@+id/sbtrandidat"
+                android:layout_marginStart="9dp"
+                android:onClick="sbtPrevDataClick"
+                android:visibility="visible" />
+
+            <Button
+                android:text=""
+                android:id="@+id/sbtrandidat"
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/asfLText"
+                android:layout_centerHorizontal="true"
+                app:drawableEndCompat="@drawable/ic_refresh_white_24dp"
+                android:layout_marginStart="9dp"
+                android:onClick="sbtPrevDataClick"
+                android:visibility="visible" />
+
+            <Button
+                android:text="@string/nextData"
+                android:layout_width="60dp"
+                android:id="@+id/sbtnextdat"
+                android:layout_height="50dp"
+                android:layout_below="@+id/asfLText"
+                android:layout_toEndOf="@+id/sbtrandidat"
+                android:layout_marginStart="9dp"
+                android:onClick="sbtNextDataClick"
+                />
+            <!--  new Line app:drawableEndCompat="@drawable/ic_menu_white_24dp"  -->
+            <Button
+                android:text="@string/search"
+                android:id="@+id/sbtSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="14sp"
+                android:layout_below="@+id/sbtnextdat"
+                android:layout_alignParentStart="true"
+                android:onClick="sbtSearchClick"
+                />
+
+            <EditText
+                android:id="@+id/sedSeek"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/sbtSearch"
+                android:layout_below="@+id/sbtnextdat"
+                android:inputType="textMultiLine"
+                />
+            <TextView
+                android:id="@+id/ystvRecoToDo"
+                android:layout_marginTop="9dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="17sp"
+                android:layout_below="@+id/sedSeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/recognizedText"
+                android:layout_width="280dp"
+                android:textSize="17sp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/ystvRecoToDo"
+                android:minHeight="110dp"
+
+                android:textIsSelectable="true"
+                />
+<!-- android:editable="false" android:layout_toStartOf="@+id/sbtReci"
+android:inputType="textMultiLine|none"
+                -->
+            <com.e.versmix.utils.ShButton
+                android:text="@string/words"
+                android:textSize="11sp"
+                android:layout_width="90dp"
+                app:drawableStartCompat="@drawable/ic_refresh_white_24dp"
+                android:id="@+id/sbtSpeakAndWordInc"
+                android:layout_height="40dp"
+                android:layout_toEndOf="@+id/sbtSpeakAnd"
+                android:layout_below="@+id/recognizedText"
+                android:layout_marginStart="9dp"
+                android:onClick="speakAndWordsClick"
+                />
+            <EditText
+                android:id="@+id/sedwordcnt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toEndOf="@id/sbtSpeakAndWordInc"
+                android:layout_below="@+id/recognizedText"
+                android:inputType="number"
+                />
+
+            <com.e.versmix.utils.ShButton
+                android:id="@+id/sbtReci"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@+id/recognizedText"
+                android:onClick="ysbtRecognizeClick"
+                android:layout_marginStart="10dp"
+                android:text="@string/record"
+                android:textSize="12sp"
+                app:hideTime="1600"
+                />
+
+            <com.e.versmix.utils.ShButton
+                android:id="@+id/sbtSpeakAnd"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_below="@+id/recognizedText"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="0dp"
+                android:layout_toEndOf="@+id/sbtReci"
+
+                android:onClick="speakAndClick"
+
+                android:text="@string/speak_and"
+                android:textSize="10sp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:layout_below="@+id/sbtReci"
+                android:indeterminate="true"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <CheckBox
+                android:text="@string/with_pause"
+                android:id="@+id/extraPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:layout_below="@+id/progressBar1"
+                android:onClick="sckRecPauseClick"
+                android:layout_marginEnd="11dp"
+                android:layout_marginTop="2dp"
+                 />
+
+            <CheckBox
+                android:text="@string/signalton"
+                android:id="@+id/scbrecoBeep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:layout_toEndOf="@+id/extraPause"
+                android:layout_below="@+id/progressBar1"
+                android:onClick="sckRecBeepClick"
+                android:layout_marginEnd="11dp"
+                android:layout_marginTop="2dp"
+                />
+
+            <CheckBox
+                android:text="@string/speak_vers"
+                android:id="@+id/speakText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:layout_below="@+id/progressBar1"
+                android:layout_toEndOf="@+id/scbrecoBeep"
+                android:onClick="sckRecPauseClick"
+                android:layout_marginEnd="11dp"
+                android:layout_marginTop="2dp"
+                />
+
+            <CheckBox
+                android:text="@string/keep_screen_on"
+                android:id="@+id/keepScreenOn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:layout_below="@+id/speakText"
+                android:onClick="keepScreenOnClick"
+                android:layout_marginEnd="11dp"
+                android:layout_marginTop="2dp"
+                />
+            <View
+                android:id="@+id/ydivi2"
+                android:layout_width="match_parent"
+                android:layout_marginTop="11dp"
+                android:layout_marginBottom="11dp"
+                android:layout_below="@+id/keepScreenOn"
+                android:layout_height="12dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:text="@string/search"
+                android:id="@+id/tv_SearchR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:layout_below="@+id/ydivi2"
+                android:layout_toEndOf="@+id/lvserepl"
+                android:layout_marginStart="9dp"
+                />
+
+            <EditText
+                android:id="@+id/ed_SearchR"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:layout_below="@+id/tv_SearchR"
+                android:layout_toEndOf="@+id/lvserepl"
+                android:layout_marginStart="9dp"
+                />
+
+            <ListView
+                android:layout_width="160dp"
+                android:id="@+id/lvserepl"
+                android:layout_height="220dp"
+                android:layout_below="@+id/ydivi2"
+                />
+
+            <TextView
+                android:text="@string/replace"
+                android:id="@+id/tv_Replaice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:layout_below="@+id/ed_SearchR"
+                android:layout_toEndOf="@+id/lvserepl"
+                android:layout_marginTop="11dp"
+                android:layout_marginStart="9dp"
+                />
+
+            <EditText
+                android:id="@+id/ed_Replace"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_Replaice"
+                android:layout_toEndOf="@+id/lvserepl"
+                android:layout_marginStart="9dp"
+                />
+
+            <Button
+                android:text="@string/add"
+                android:id="@+id/btsrAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="10sp"
+                android:onClick="btAddClick"
+                android:layout_below="@+id/ed_Replace"
+                android:layout_toEndOf="@+id/lvserepl"
+                android:layout_marginStart="9dp"
+                />
+
+            <Button
+                android:text="@string/delete"
+                android:id="@+id/btsrDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="11sp"
+                android:onClick="btDeleteClick"
+                android:layout_below="@+id/ed_Replace"
+                android:layout_toEndOf="@+id/btsrAdd"
+                android:layout_marginStart="9dp"
+                />
+
+            <Button
+                android:text="@string/up"
+                android:id="@+id/btsrUp"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:onClick="btUpClick"
+                android:layout_below="@+id/btsrDelete"
+                android:layout_toEndOf="@+id/lvserepl"
+                android:layout_marginStart="9dp"
+                />
+
+            <Button
+                android:text="@string/down"
+                android:id="@+id/btsrDown"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:onClick="btDownClick"
+                android:layout_below="@+id/btsrDelete"
+                android:layout_toEndOf="@+id/btsrAdd"
+                android:layout_marginStart="9dp"
+                />
+
+<!--
+            <Button
+                android:text="Test free Kaldi TTS.."
+                android:id="@+id/btn_KaldiTest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/lvserepl"
+                android:onClick="openKaldiTestClick"
+                android:layout_marginTop="34dp" />
+
+            <TextView
+                android:id="@+id/tv_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:layout_below="@+id/btn_KaldiTest"
+                android:layout_centerHorizontal="true" />
+-->
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+
+
+
+</RelativeLayout>
